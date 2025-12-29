@@ -10,7 +10,7 @@ autocode:
     root: /Users/jack.li/Documents/private/gin-vue-admin
     server: server
     module: github.com/flipped-aurora/gin-vue-admin/server
-    ai-path: ""
+    ai-path: "https://ai.gin-vue-admin.com/{FUNC}/jackli/6f930948-c343-491c-b321-65d457aeba22"
 aws-s3:
     bucket: xxxxx-10005608
     region: ap-shanghai
@@ -84,7 +84,7 @@ hua-wei-obs:
     access-key: you-access-key
     secret-key: you-secret-key
 jwt:
-    signing-key: 8396a2c9-cf36-438a-b77b-b032d766e911
+    signing-key: d91dbeb1-ab77-4d67-9018-0cf7e8899b75
     expires-time: 7d
     buffer-time: 1d
     issuer: qmPlus
