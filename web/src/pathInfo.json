@@ -1,4 +1,10 @@
 {
+  "/src/view/K8s/k8sClusters/k8sClusters.vue": "K8sClusters",
+  "/src/view/K8s/k8sClusters/k8sClustersForm.vue": "K8sClustersForm",
+  "/src/view/K8s/k8sNodes/k8sNodes.vue": "K8sNodes",
+  "/src/view/K8s/k8sNodes/k8sNodesForm.vue": "K8sNodesForm",
+  "/src/view/K8s/k8sPods/k8sPods.vue": "K8sPods",
+  "/src/view/K8s/k8sPods/k8sPodsForm.vue": "K8sPodsForm",
   "/src/view/about/index.vue": "About",
   "/src/view/dashboard/components/banner.vue": "Banner",
   "/src/view/dashboard/components/card.vue": "Card",
