@@ -6,10 +6,12 @@ type RouterGroup struct {
 	K8sClustersRouter
 	K8sNodesRouter
 	K8sPodsRouter
+	K8sServicesRouter
 }
 
 var (
 	k8sClustersApi = api.ApiGroupApp.K8sApiGroup.K8sClustersApi
 	k8sNodesApi    = api.ApiGroupApp.K8sApiGroup.K8sNodesApi
 	k8sPodsApi     = api.ApiGroupApp.K8sApiGroup.K8sPodsApi
+	k8sServicesApi = api.ApiGroupApp.K8sApiGroup.K8sServicesApi
 )
