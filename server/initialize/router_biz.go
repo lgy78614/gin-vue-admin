@@ -15,7 +15,8 @@ func initBizRouter(routers ...*gin.RouterGroup) {
 	holder(publicGroup, privateGroup)
 	{
 		K8sRouter := router.RouterGroupApp.K8s
-		K8sRouter.InitK8sClustersRouter(privateGroup, publicGroup) // 占位方法，保证文件可以正确加载，避免go空变量检测报错，请勿删除。
-		K8sRouter.InitK8sNodesRouter(privateGroup, publicGroup)
+		K8sRouter.InitK8sClustersRouter(privateGroup, publicGroup)
+		K8sRouter.InitK8sNodesRouter(privateGroup, publicGroup) // 占位方法，保证文件可以正确加载，避免go空变量检测报错，请勿删除。
+		K8sRouter.InitK8sPodsRouter(privateGroup, publicGroup)
 	}
 }
