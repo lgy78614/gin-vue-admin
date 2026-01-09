@@ -1,6 +1,8 @@
 {
   "/src/view/K8s/k8sClusters/k8sClusters.vue": "K8sClusters",
   "/src/view/K8s/k8sClusters/k8sClustersForm.vue": "K8sClustersForm",
+  "/src/view/K8s/k8sConfigStorage/k8sConfigStorage.vue": "K8sConfigStorage",
+  "/src/view/K8s/k8sConfigStorage/k8sConfigStorageForm.vue": "K8sConfigStorageForm",
   "/src/view/K8s/k8sNamespaces/k8sNamespaces.vue": "K8sNamespaces",
   "/src/view/K8s/k8sNamespaces/k8sNamespacesForm.vue": "K8sNamespacesForm",
   "/src/view/K8s/k8sNodes/k8sNodes.vue": "K8sNodes",
