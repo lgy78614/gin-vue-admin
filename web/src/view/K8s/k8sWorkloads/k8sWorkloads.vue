@@ -27,12 +27,12 @@
         style="width: 100%"
         tooltip-effect="dark"
         :data="tableData"
-        row-key="serviceId"
+        row-key="workloadId"
         @selection-change="handleSelectionChange"
         >
         <el-table-column type="selection" width="55" />
         
-            <el-table-column align="left" label="自增主键" prop="serviceId" width="120" />
+            <el-table-column align="left" label="自增主键" prop="workloadId" width="120" />
 
             <el-table-column align="left" label="所属集群ID" prop="clusterId" width="120" />
 
@@ -40,27 +40,34 @@
 
             <el-table-column align="left" label="K8s UID" prop="uid" width="120" />
 
-            <el-table-column align="left" label="服务名称" prop="name" width="120" />
+            <el-table-column align="left" label="工作负载名称" prop="name" width="120" />
 
-            <el-table-column align="left" label="类型: Service/Ingress" prop="type" width="120" />
+            <el-table-column align="left" label="类型: Deployment/StatefulSet/DaemonSet/Job/CronJob" prop="type" width="120" />
 
-            <el-table-column align="left" label="Service特有: ClusterIP/NodePort/LoadBalancer" prop="serviceType" width="120" />
+            <el-table-column align="left" label="期望副本数" prop="replicasDesired" width="120" />
 
-            <el-table-column align="left" label="Service的Cluster IP" prop="clusterIp" width="120" />
+            <el-table-column align="left" label="当前副本数" prop="replicasCurrent" width="120" />
 
-            <el-table-column align="left" label="ports字段" prop="ports" width="120" />
+            <el-table-column align="left" label="就绪副本数" prop="replicasReady" width="120" />
 
-            <el-table-column align="left" label="后端Pod选择器" prop="selector" width="120" />
+            <el-table-column align="left" label="标签" prop="labels" width="120" />
 
-            <el-table-column align="left" label="Ingress特有: 关联的Host和Path规则" prop="ingressHosts" width="120" />
+            <el-table-column align="left" label="注解" prop="annotations" width="120" />
+
+            <el-table-column align="left" label="标签选择器(JSON格式)" prop="selector" width="120" />
 
             <el-table-column align="left" label="创建时间" prop="creationTimestamp" width="180">
    <template #default="scope">{{ formatDate(scope.row.creationTimestamp) }}</template>
 </el-table-column>
+            <el-table-column align="left" label="最后同步时间" prop="lastSyncTimestamp" width="180">
+   <template #default="scope">{{ formatDate(scope.row.lastSyncTimestamp) }}</template>
+</el-table-column>
+            <el-table-column align="left" label="状态条件(JSON数组)" prop="statusConditions" width="120" />
+
         <el-table-column align="left" label="操作" fixed="right" :min-width="appStore.operateMinWith">
             <template #default="scope">
             <el-button  type="primary" link class="table-button" @click="getDetails(scope.row)"><el-icon style="margin-right: 5px"><InfoFilled /></el-icon>查看</el-button>
-            <el-button  type="primary" link icon="edit" class="table-button" @click="updateK8sServicesFunc(scope.row)">编辑</el-button>
+            <el-button  type="primary" link icon="edit" class="table-button" @click="updateK8sWorkloadsFunc(scope.row)">编辑</el-button>
             <el-button   type="primary" link icon="delete" @click="deleteRow(scope.row)">删除</el-button>
             </template>
         </el-table-column>
@@ -89,8 +96,8 @@
             </template>
 
           <el-form :model="formData" label-position="top" ref="elFormRef" :rules="rule" label-width="80px">
-            <el-form-item label="自增主键:" prop="serviceId">
-    <el-input v-model.number="formData.serviceId" :clearable="true" placeholder="请输入自增主键" />
+            <el-form-item label="自增主键:" prop="workloadId">
+    <el-input v-model.number="formData.workloadId" :clearable="true" placeholder="请输入自增主键" />
 </el-form-item>
             <el-form-item label="所属集群ID:" prop="clusterId">
     <el-input v-model="formData.clusterId" :clearable="true" placeholder="请输入所属集群ID" />
@@ -101,29 +108,38 @@
             <el-form-item label="K8s UID:" prop="uid">
     <el-input v-model="formData.uid" :clearable="true" placeholder="请输入K8s UID" />
 </el-form-item>
-            <el-form-item label="服务名称:" prop="name">
-    <el-input v-model="formData.name" :clearable="true" placeholder="请输入服务名称" />
+            <el-form-item label="工作负载名称:" prop="name">
+    <el-input v-model="formData.name" :clearable="true" placeholder="请输入工作负载名称" />
 </el-form-item>
-            <el-form-item label="类型: Service/Ingress:" prop="type">
-    <el-input v-model="formData.type" :clearable="true" placeholder="请输入类型: Service/Ingress" />
+            <el-form-item label="类型: Deployment/StatefulSet/DaemonSet/Job/CronJob:" prop="type">
+    <el-input v-model="formData.type" :clearable="true" placeholder="请输入类型: Deployment/StatefulSet/DaemonSet/Job/CronJob" />
 </el-form-item>
-            <el-form-item label="Service特有: ClusterIP/NodePort/LoadBalancer:" prop="serviceType">
-    <el-input v-model="formData.serviceType" :clearable="true" placeholder="请输入Service特有: ClusterIP/NodePort/LoadBalancer" />
+            <el-form-item label="期望副本数:" prop="replicasDesired">
+    <el-input v-model.number="formData.replicasDesired" :clearable="true" placeholder="请输入期望副本数" />
 </el-form-item>
-            <el-form-item label="Service的Cluster IP:" prop="clusterIp">
-    <el-input v-model="formData.clusterIp" :clearable="true" placeholder="请输入Service的Cluster IP" />
+            <el-form-item label="当前副本数:" prop="replicasCurrent">
+    <el-input v-model.number="formData.replicasCurrent" :clearable="true" placeholder="请输入当前副本数" />
 </el-form-item>
-            <el-form-item label="ports字段:" prop="ports">
-    <el-input v-model="formData.ports" :clearable="true" placeholder="请输入ports字段" />
+            <el-form-item label="就绪副本数:" prop="replicasReady">
+    <el-input v-model.number="formData.replicasReady" :clearable="true" placeholder="请输入就绪副本数" />
 </el-form-item>
-            <el-form-item label="后端Pod选择器:" prop="selector">
-    <el-input v-model="formData.selector" :clearable="true" placeholder="请输入后端Pod选择器" />
+            <el-form-item label="标签:" prop="labels">
+    <el-input v-model="formData.labels" :clearable="true" placeholder="请输入标签" />
 </el-form-item>
-            <el-form-item label="Ingress特有: 关联的Host和Path规则:" prop="ingressHosts">
-    <el-input v-model="formData.ingressHosts" :clearable="true" placeholder="请输入Ingress特有: 关联的Host和Path规则" />
+            <el-form-item label="注解:" prop="annotations">
+    <el-input v-model="formData.annotations" :clearable="true" placeholder="请输入注解" />
+</el-form-item>
+            <el-form-item label="标签选择器(JSON格式):" prop="selector">
+    <el-input v-model="formData.selector" :clearable="true" placeholder="请输入标签选择器(JSON格式)" />
 </el-form-item>
             <el-form-item label="创建时间:" prop="creationTimestamp">
     <el-date-picker v-model="formData.creationTimestamp" type="date" style="width:100%" placeholder="选择日期" :clearable="true" />
+</el-form-item>
+            <el-form-item label="最后同步时间:" prop="lastSyncTimestamp">
+    <el-date-picker v-model="formData.lastSyncTimestamp" type="date" style="width:100%" placeholder="选择日期" :clearable="true" />
+</el-form-item>
+            <el-form-item label="状态条件(JSON数组):" prop="statusConditions">
+    <el-input v-model="formData.statusConditions" :clearable="true" placeholder="请输入状态条件(JSON数组)" />
 </el-form-item>
           </el-form>
     </el-drawer>
@@ -131,7 +147,7 @@
     <el-drawer destroy-on-close :size="appStore.drawerSize" v-model="detailShow" :show-close="true" :before-close="closeDetailShow" title="查看">
             <el-descriptions :column="1" border>
                     <el-descriptions-item label="自增主键">
-    {{ detailForm.serviceId }}
+    {{ detailForm.workloadId }}
 </el-descriptions-item>
                     <el-descriptions-item label="所属集群ID">
     {{ detailForm.clusterId }}
@@ -142,29 +158,38 @@
                     <el-descriptions-item label="K8s UID">
     {{ detailForm.uid }}
 </el-descriptions-item>
-                    <el-descriptions-item label="服务名称">
+                    <el-descriptions-item label="工作负载名称">
     {{ detailForm.name }}
 </el-descriptions-item>
-                    <el-descriptions-item label="类型: Service/Ingress">
+                    <el-descriptions-item label="类型: Deployment/StatefulSet/DaemonSet/Job/CronJob">
     {{ detailForm.type }}
 </el-descriptions-item>
-                    <el-descriptions-item label="Service特有: ClusterIP/NodePort/LoadBalancer">
-    {{ detailForm.serviceType }}
+                    <el-descriptions-item label="期望副本数">
+    {{ detailForm.replicasDesired }}
 </el-descriptions-item>
-                    <el-descriptions-item label="Service的Cluster IP">
-    {{ detailForm.clusterIp }}
+                    <el-descriptions-item label="当前副本数">
+    {{ detailForm.replicasCurrent }}
 </el-descriptions-item>
-                    <el-descriptions-item label="ports字段">
-    {{ detailForm.ports }}
+                    <el-descriptions-item label="就绪副本数">
+    {{ detailForm.replicasReady }}
 </el-descriptions-item>
-                    <el-descriptions-item label="后端Pod选择器">
+                    <el-descriptions-item label="标签">
+    {{ detailForm.labels }}
+</el-descriptions-item>
+                    <el-descriptions-item label="注解">
+    {{ detailForm.annotations }}
+</el-descriptions-item>
+                    <el-descriptions-item label="标签选择器(JSON格式)">
     {{ detailForm.selector }}
-</el-descriptions-item>
-                    <el-descriptions-item label="Ingress特有: 关联的Host和Path规则">
-    {{ detailForm.ingressHosts }}
 </el-descriptions-item>
                     <el-descriptions-item label="创建时间">
     {{ detailForm.creationTimestamp }}
+</el-descriptions-item>
+                    <el-descriptions-item label="最后同步时间">
+    {{ detailForm.lastSyncTimestamp }}
+</el-descriptions-item>
+                    <el-descriptions-item label="状态条件(JSON数组)">
+    {{ detailForm.statusConditions }}
 </el-descriptions-item>
             </el-descriptions>
         </el-drawer>
@@ -174,13 +199,13 @@
 
 <script setup>
 import {
-  createK8sServices,
-  deleteK8sServices,
-  deleteK8sServicesByIds,
-  updateK8sServices,
-  findK8sServices,
-  getK8sServicesList
-} from '@/api/K8s/k8sServices'
+  createK8sWorkloads,
+  deleteK8sWorkloads,
+  deleteK8sWorkloadsByIds,
+  updateK8sWorkloads,
+  findK8sWorkloads,
+  getK8sWorkloadsList
+} from '@/api/K8s/k8sWorkloads'
 
 // 全量引入格式化工具 请按需保留
 import { getDictFunc, formatDate, formatBoolean, filterDict ,filterDataSource, returnArrImg, onDownloadFile } from '@/utils/format'
@@ -192,7 +217,7 @@ import { useAppStore } from "@/pinia"
 
 
 defineOptions({
-    name: 'K8sServices'
+    name: 'K8sWorkloads'
 })
 
 // 提交按钮loading
@@ -204,18 +229,21 @@ const showAllQuery = ref(false)
 
 // 自动化生成的字典（可能为空）以及字段
 const formData = ref({
-            serviceId: undefined,
+            workloadId: undefined,
             clusterId: '',
             namespace: '',
             uid: '',
             name: '',
             type: '',
-            serviceType: '',
-            clusterIp: '',
-            ports: '',
+            replicasDesired: undefined,
+            replicasCurrent: undefined,
+            replicasReady: undefined,
+            labels: '',
+            annotations: '',
             selector: '',
-            ingressHosts: '',
             creationTimestamp: new Date(),
+            lastSyncTimestamp: new Date(),
+            statusConditions: '',
         })
 
 
@@ -262,7 +290,7 @@ const handleCurrentChange = (val) => {
 
 // 查询
 const getTableData = async() => {
-  const table = await getK8sServicesList({ page: page.value, pageSize: pageSize.value, ...searchInfo.value })
+  const table = await getK8sWorkloadsList({ page: page.value, pageSize: pageSize.value, ...searchInfo.value })
   if (table.code === 0) {
     tableData.value = table.data.list
     total.value = table.data.total
@@ -297,7 +325,7 @@ const deleteRow = (row) => {
         cancelButtonText: '取消',
         type: 'warning'
     }).then(() => {
-            deleteK8sServicesFunc(row)
+            deleteK8sWorkloadsFunc(row)
         })
     }
 
@@ -308,7 +336,7 @@ const onDelete = async() => {
     cancelButtonText: '取消',
     type: 'warning'
   }).then(async() => {
-      const serviceIds = []
+      const workloadIds = []
       if (multipleSelection.value.length === 0) {
         ElMessage({
           type: 'warning',
@@ -318,15 +346,15 @@ const onDelete = async() => {
       }
       multipleSelection.value &&
         multipleSelection.value.map(item => {
-          serviceIds.push(item.serviceId)
+          workloadIds.push(item.workloadId)
         })
-      const res = await deleteK8sServicesByIds({ serviceIds })
+      const res = await deleteK8sWorkloadsByIds({ workloadIds })
       if (res.code === 0) {
         ElMessage({
           type: 'success',
           message: '删除成功'
         })
-        if (tableData.value.length === serviceIds.length && page.value > 1) {
+        if (tableData.value.length === workloadIds.length && page.value > 1) {
           page.value--
         }
         getTableData()
@@ -338,8 +366,8 @@ const onDelete = async() => {
 const type = ref('')
 
 // 更新行
-const updateK8sServicesFunc = async(row) => {
-    const res = await findK8sServices({ serviceId: row.serviceId })
+const updateK8sWorkloadsFunc = async(row) => {
+    const res = await findK8sWorkloads({ workloadId: row.workloadId })
     type.value = 'update'
     if (res.code === 0) {
         formData.value = res.data
@@ -349,8 +377,8 @@ const updateK8sServicesFunc = async(row) => {
 
 
 // 删除行
-const deleteK8sServicesFunc = async (row) => {
-    const res = await deleteK8sServices({ serviceId: row.serviceId })
+const deleteK8sWorkloadsFunc = async (row) => {
+    const res = await deleteK8sWorkloads({ workloadId: row.workloadId })
     if (res.code === 0) {
         ElMessage({
                 type: 'success',
@@ -376,18 +404,21 @@ const openDialog = () => {
 const closeDialog = () => {
     dialogFormVisible.value = false
     formData.value = {
-        serviceId: undefined,
+        workloadId: undefined,
         clusterId: '',
         namespace: '',
         uid: '',
         name: '',
         type: '',
-        serviceType: '',
-        clusterIp: '',
-        ports: '',
+        replicasDesired: undefined,
+        replicasCurrent: undefined,
+        replicasReady: undefined,
+        labels: '',
+        annotations: '',
         selector: '',
-        ingressHosts: '',
         creationTimestamp: new Date(),
+        lastSyncTimestamp: new Date(),
+        statusConditions: '',
         }
 }
 // 弹窗确定
@@ -398,13 +429,13 @@ const enterDialog = async () => {
               let res
               switch (type.value) {
                 case 'create':
-                  res = await createK8sServices(formData.value)
+                  res = await createK8sWorkloads(formData.value)
                   break
                 case 'update':
-                  res = await updateK8sServices(formData.value)
+                  res = await updateK8sWorkloads(formData.value)
                   break
                 default:
-                  res = await createK8sServices(formData.value)
+                  res = await createK8sWorkloads(formData.value)
                   break
               }
               btnLoading.value = false
@@ -434,7 +465,7 @@ const openDetailShow = () => {
 // 打开详情
 const getDetails = async (row) => {
   // 打开弹窗
-  const res = await findK8sServices({ serviceId: row.serviceId })
+  const res = await findK8sWorkloads({ workloadId: row.workloadId })
   if (res.code === 0) {
     detailForm.value = res.data
     openDetailShow()

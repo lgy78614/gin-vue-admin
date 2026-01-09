@@ -53,18 +53,6 @@ func (k8sServicesService *K8sServicesService)GetK8sServicesInfoList(ctx context.
     var k8sServicess []K8s.K8sServices
     // 如果有条件搜索 下方会自动创建搜索语句
     
-    if info.ServiceId != nil {
-        db = db.Where("service_id = ?", *info.ServiceId)
-    }
-    if info.ClusterId != nil && *info.ClusterId != "" {
-        db = db.Where("cluster_id = ?", *info.ClusterId)
-    }
-    if info.Namespace != nil && *info.Namespace != "" {
-        db = db.Where("namespace = ?", *info.Namespace)
-    }
-    if info.Name != nil && *info.Name != "" {
-        db = db.Where("name = ?", *info.Name)
-    }
 	err = db.Count(&total).Error
 	if err!=nil {
     	return

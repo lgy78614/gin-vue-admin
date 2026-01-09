@@ -7,7 +7,7 @@ import (
 
 func bizModel() error {
 	db := global.GVA_DB
-	err := db.AutoMigrate(K8s.K8sClusters{}, K8s.K8sNodes{}, K8s.K8sPods{}, K8s.K8sServices{})
+	err := db.AutoMigrate(K8s.K8sClusters{}, K8s.K8sNodes{}, K8s.K8sPods{}, K8s.K8sServices{}, K8s.K8sNamespaces{}, K8s.K8sWorkloads{})
 	if err != nil {
 		return err
 	}

@@ -5,4 +5,6 @@ type ServiceGroup struct {
 	K8sNodesService
 	K8sPodsService
 	K8sServicesService
+	K8sNamespacesService
+	K8sWorkloadsService
 }

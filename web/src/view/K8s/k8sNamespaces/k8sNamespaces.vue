@@ -27,40 +27,33 @@
         style="width: 100%"
         tooltip-effect="dark"
         :data="tableData"
-        row-key="serviceId"
+        row-key="namespaceId"
         @selection-change="handleSelectionChange"
         >
         <el-table-column type="selection" width="55" />
         
-            <el-table-column align="left" label="自增主键" prop="serviceId" width="120" />
+            <el-table-column align="left" label="自增主键" prop="namespaceId" width="120" />
 
             <el-table-column align="left" label="所属集群ID" prop="clusterId" width="120" />
 
-            <el-table-column align="left" label="所属命名空间" prop="namespace" width="120" />
+            <el-table-column align="left" label="K8s中的唯一UID" prop="uid" width="120" />
 
-            <el-table-column align="left" label="K8s UID" prop="uid" width="120" />
+            <el-table-column align="left" label="命名空间名称" prop="name" width="120" />
 
-            <el-table-column align="left" label="服务名称" prop="name" width="120" />
+            <el-table-column align="left" label="状态: Active/Terminating" prop="status" width="120" />
 
-            <el-table-column align="left" label="类型: Service/Ingress" prop="type" width="120" />
+            <el-table-column align="left" label="标签(JSON格式)" prop="labels" width="120" />
 
-            <el-table-column align="left" label="Service特有: ClusterIP/NodePort/LoadBalancer" prop="serviceType" width="120" />
-
-            <el-table-column align="left" label="Service的Cluster IP" prop="clusterIp" width="120" />
-
-            <el-table-column align="left" label="ports字段" prop="ports" width="120" />
-
-            <el-table-column align="left" label="后端Pod选择器" prop="selector" width="120" />
-
-            <el-table-column align="left" label="Ingress特有: 关联的Host和Path规则" prop="ingressHosts" width="120" />
-
-            <el-table-column align="left" label="创建时间" prop="creationTimestamp" width="180">
+            <el-table-column align="left" label="K8s中的创建时间" prop="creationTimestamp" width="180">
    <template #default="scope">{{ formatDate(scope.row.creationTimestamp) }}</template>
+</el-table-column>
+            <el-table-column align="left" label="计划删除时间" prop="deletionTimestamp" width="180">
+   <template #default="scope">{{ formatDate(scope.row.deletionTimestamp) }}</template>
 </el-table-column>
         <el-table-column align="left" label="操作" fixed="right" :min-width="appStore.operateMinWith">
             <template #default="scope">
             <el-button  type="primary" link class="table-button" @click="getDetails(scope.row)"><el-icon style="margin-right: 5px"><InfoFilled /></el-icon>查看</el-button>
-            <el-button  type="primary" link icon="edit" class="table-button" @click="updateK8sServicesFunc(scope.row)">编辑</el-button>
+            <el-button  type="primary" link icon="edit" class="table-button" @click="updateK8sNamespacesFunc(scope.row)">编辑</el-button>
             <el-button   type="primary" link icon="delete" @click="deleteRow(scope.row)">删除</el-button>
             </template>
         </el-table-column>
@@ -89,41 +82,29 @@
             </template>
 
           <el-form :model="formData" label-position="top" ref="elFormRef" :rules="rule" label-width="80px">
-            <el-form-item label="自增主键:" prop="serviceId">
-    <el-input v-model.number="formData.serviceId" :clearable="true" placeholder="请输入自增主键" />
+            <el-form-item label="自增主键:" prop="namespaceId">
+    <el-input v-model.number="formData.namespaceId" :clearable="true" placeholder="请输入自增主键" />
 </el-form-item>
             <el-form-item label="所属集群ID:" prop="clusterId">
     <el-input v-model="formData.clusterId" :clearable="true" placeholder="请输入所属集群ID" />
 </el-form-item>
-            <el-form-item label="所属命名空间:" prop="namespace">
-    <el-input v-model="formData.namespace" :clearable="true" placeholder="请输入所属命名空间" />
+            <el-form-item label="K8s中的唯一UID:" prop="uid">
+    <el-input v-model="formData.uid" :clearable="true" placeholder="请输入K8s中的唯一UID" />
 </el-form-item>
-            <el-form-item label="K8s UID:" prop="uid">
-    <el-input v-model="formData.uid" :clearable="true" placeholder="请输入K8s UID" />
+            <el-form-item label="命名空间名称:" prop="name">
+    <el-input v-model="formData.name" :clearable="true" placeholder="请输入命名空间名称" />
 </el-form-item>
-            <el-form-item label="服务名称:" prop="name">
-    <el-input v-model="formData.name" :clearable="true" placeholder="请输入服务名称" />
+            <el-form-item label="状态: Active/Terminating:" prop="status">
+    <el-input v-model="formData.status" :clearable="true" placeholder="请输入状态: Active/Terminating" />
 </el-form-item>
-            <el-form-item label="类型: Service/Ingress:" prop="type">
-    <el-input v-model="formData.type" :clearable="true" placeholder="请输入类型: Service/Ingress" />
+            <el-form-item label="标签(JSON格式):" prop="labels">
+    <el-input v-model="formData.labels" :clearable="true" placeholder="请输入标签(JSON格式)" />
 </el-form-item>
-            <el-form-item label="Service特有: ClusterIP/NodePort/LoadBalancer:" prop="serviceType">
-    <el-input v-model="formData.serviceType" :clearable="true" placeholder="请输入Service特有: ClusterIP/NodePort/LoadBalancer" />
-</el-form-item>
-            <el-form-item label="Service的Cluster IP:" prop="clusterIp">
-    <el-input v-model="formData.clusterIp" :clearable="true" placeholder="请输入Service的Cluster IP" />
-</el-form-item>
-            <el-form-item label="ports字段:" prop="ports">
-    <el-input v-model="formData.ports" :clearable="true" placeholder="请输入ports字段" />
-</el-form-item>
-            <el-form-item label="后端Pod选择器:" prop="selector">
-    <el-input v-model="formData.selector" :clearable="true" placeholder="请输入后端Pod选择器" />
-</el-form-item>
-            <el-form-item label="Ingress特有: 关联的Host和Path规则:" prop="ingressHosts">
-    <el-input v-model="formData.ingressHosts" :clearable="true" placeholder="请输入Ingress特有: 关联的Host和Path规则" />
-</el-form-item>
-            <el-form-item label="创建时间:" prop="creationTimestamp">
+            <el-form-item label="K8s中的创建时间:" prop="creationTimestamp">
     <el-date-picker v-model="formData.creationTimestamp" type="date" style="width:100%" placeholder="选择日期" :clearable="true" />
+</el-form-item>
+            <el-form-item label="计划删除时间:" prop="deletionTimestamp">
+    <el-date-picker v-model="formData.deletionTimestamp" type="date" style="width:100%" placeholder="选择日期" :clearable="true" />
 </el-form-item>
           </el-form>
     </el-drawer>
@@ -131,40 +112,28 @@
     <el-drawer destroy-on-close :size="appStore.drawerSize" v-model="detailShow" :show-close="true" :before-close="closeDetailShow" title="查看">
             <el-descriptions :column="1" border>
                     <el-descriptions-item label="自增主键">
-    {{ detailForm.serviceId }}
+    {{ detailForm.namespaceId }}
 </el-descriptions-item>
                     <el-descriptions-item label="所属集群ID">
     {{ detailForm.clusterId }}
 </el-descriptions-item>
-                    <el-descriptions-item label="所属命名空间">
-    {{ detailForm.namespace }}
-</el-descriptions-item>
-                    <el-descriptions-item label="K8s UID">
+                    <el-descriptions-item label="K8s中的唯一UID">
     {{ detailForm.uid }}
 </el-descriptions-item>
-                    <el-descriptions-item label="服务名称">
+                    <el-descriptions-item label="命名空间名称">
     {{ detailForm.name }}
 </el-descriptions-item>
-                    <el-descriptions-item label="类型: Service/Ingress">
-    {{ detailForm.type }}
+                    <el-descriptions-item label="状态: Active/Terminating">
+    {{ detailForm.status }}
 </el-descriptions-item>
-                    <el-descriptions-item label="Service特有: ClusterIP/NodePort/LoadBalancer">
-    {{ detailForm.serviceType }}
+                    <el-descriptions-item label="标签(JSON格式)">
+    {{ detailForm.labels }}
 </el-descriptions-item>
-                    <el-descriptions-item label="Service的Cluster IP">
-    {{ detailForm.clusterIp }}
-</el-descriptions-item>
-                    <el-descriptions-item label="ports字段">
-    {{ detailForm.ports }}
-</el-descriptions-item>
-                    <el-descriptions-item label="后端Pod选择器">
-    {{ detailForm.selector }}
-</el-descriptions-item>
-                    <el-descriptions-item label="Ingress特有: 关联的Host和Path规则">
-    {{ detailForm.ingressHosts }}
-</el-descriptions-item>
-                    <el-descriptions-item label="创建时间">
+                    <el-descriptions-item label="K8s中的创建时间">
     {{ detailForm.creationTimestamp }}
+</el-descriptions-item>
+                    <el-descriptions-item label="计划删除时间">
+    {{ detailForm.deletionTimestamp }}
 </el-descriptions-item>
             </el-descriptions>
         </el-drawer>
@@ -174,13 +143,13 @@
 
 <script setup>
 import {
-  createK8sServices,
-  deleteK8sServices,
-  deleteK8sServicesByIds,
-  updateK8sServices,
-  findK8sServices,
-  getK8sServicesList
-} from '@/api/K8s/k8sServices'
+  createK8sNamespaces,
+  deleteK8sNamespaces,
+  deleteK8sNamespacesByIds,
+  updateK8sNamespaces,
+  findK8sNamespaces,
+  getK8sNamespacesList
+} from '@/api/K8s/k8sNamespaces'
 
 // 全量引入格式化工具 请按需保留
 import { getDictFunc, formatDate, formatBoolean, filterDict ,filterDataSource, returnArrImg, onDownloadFile } from '@/utils/format'
@@ -192,7 +161,7 @@ import { useAppStore } from "@/pinia"
 
 
 defineOptions({
-    name: 'K8sServices'
+    name: 'K8sNamespaces'
 })
 
 // 提交按钮loading
@@ -204,18 +173,14 @@ const showAllQuery = ref(false)
 
 // 自动化生成的字典（可能为空）以及字段
 const formData = ref({
-            serviceId: undefined,
+            namespaceId: undefined,
             clusterId: '',
-            namespace: '',
             uid: '',
             name: '',
-            type: '',
-            serviceType: '',
-            clusterIp: '',
-            ports: '',
-            selector: '',
-            ingressHosts: '',
+            status: '',
+            labels: '',
             creationTimestamp: new Date(),
+            deletionTimestamp: new Date(),
         })
 
 
@@ -262,7 +227,7 @@ const handleCurrentChange = (val) => {
 
 // 查询
 const getTableData = async() => {
-  const table = await getK8sServicesList({ page: page.value, pageSize: pageSize.value, ...searchInfo.value })
+  const table = await getK8sNamespacesList({ page: page.value, pageSize: pageSize.value, ...searchInfo.value })
   if (table.code === 0) {
     tableData.value = table.data.list
     total.value = table.data.total
@@ -297,7 +262,7 @@ const deleteRow = (row) => {
         cancelButtonText: '取消',
         type: 'warning'
     }).then(() => {
-            deleteK8sServicesFunc(row)
+            deleteK8sNamespacesFunc(row)
         })
     }
 
@@ -308,7 +273,7 @@ const onDelete = async() => {
     cancelButtonText: '取消',
     type: 'warning'
   }).then(async() => {
-      const serviceIds = []
+      const namespaceIds = []
       if (multipleSelection.value.length === 0) {
         ElMessage({
           type: 'warning',
@@ -318,15 +283,15 @@ const onDelete = async() => {
       }
       multipleSelection.value &&
         multipleSelection.value.map(item => {
-          serviceIds.push(item.serviceId)
+          namespaceIds.push(item.namespaceId)
         })
-      const res = await deleteK8sServicesByIds({ serviceIds })
+      const res = await deleteK8sNamespacesByIds({ namespaceIds })
       if (res.code === 0) {
         ElMessage({
           type: 'success',
           message: '删除成功'
         })
-        if (tableData.value.length === serviceIds.length && page.value > 1) {
+        if (tableData.value.length === namespaceIds.length && page.value > 1) {
           page.value--
         }
         getTableData()
@@ -338,8 +303,8 @@ const onDelete = async() => {
 const type = ref('')
 
 // 更新行
-const updateK8sServicesFunc = async(row) => {
-    const res = await findK8sServices({ serviceId: row.serviceId })
+const updateK8sNamespacesFunc = async(row) => {
+    const res = await findK8sNamespaces({ namespaceId: row.namespaceId })
     type.value = 'update'
     if (res.code === 0) {
         formData.value = res.data
@@ -349,8 +314,8 @@ const updateK8sServicesFunc = async(row) => {
 
 
 // 删除行
-const deleteK8sServicesFunc = async (row) => {
-    const res = await deleteK8sServices({ serviceId: row.serviceId })
+const deleteK8sNamespacesFunc = async (row) => {
+    const res = await deleteK8sNamespaces({ namespaceId: row.namespaceId })
     if (res.code === 0) {
         ElMessage({
                 type: 'success',
@@ -376,18 +341,14 @@ const openDialog = () => {
 const closeDialog = () => {
     dialogFormVisible.value = false
     formData.value = {
-        serviceId: undefined,
+        namespaceId: undefined,
         clusterId: '',
-        namespace: '',
         uid: '',
         name: '',
-        type: '',
-        serviceType: '',
-        clusterIp: '',
-        ports: '',
-        selector: '',
-        ingressHosts: '',
+        status: '',
+        labels: '',
         creationTimestamp: new Date(),
+        deletionTimestamp: new Date(),
         }
 }
 // 弹窗确定
@@ -398,13 +359,13 @@ const enterDialog = async () => {
               let res
               switch (type.value) {
                 case 'create':
-                  res = await createK8sServices(formData.value)
+                  res = await createK8sNamespaces(formData.value)
                   break
                 case 'update':
-                  res = await updateK8sServices(formData.value)
+                  res = await updateK8sNamespaces(formData.value)
                   break
                 default:
-                  res = await createK8sServices(formData.value)
+                  res = await createK8sNamespaces(formData.value)
                   break
               }
               btnLoading.value = false
@@ -434,7 +395,7 @@ const openDetailShow = () => {
 // 打开详情
 const getDetails = async (row) => {
   // 打开弹窗
-  const res = await findK8sServices({ serviceId: row.serviceId })
+  const res = await findK8sNamespaces({ namespaceId: row.namespaceId })
   if (res.code === 0) {
     detailForm.value = res.data
     openDetailShow()

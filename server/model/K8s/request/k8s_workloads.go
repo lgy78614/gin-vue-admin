@@ -6,6 +6,6 @@ import (
 	
 )
 
-type K8sServicesSearch struct{
+type K8sWorkloadsSearch struct{
     request.PageInfo
 }
