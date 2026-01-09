@@ -7,4 +7,5 @@ type ServiceGroup struct {
 	K8sServicesService
 	K8sNamespacesService
 	K8sWorkloadsService
+	K8sConfigStorageService
 }
