@@ -43,8 +43,10 @@
             <el-table-column align="left" label="云厂商: AWS/Azure/GCP/on-premise" prop="cloudProvider" width="120" />
 
             <el-table-column align="left" label="区域" prop="region" width="120" />
+            <el-table-column align="left" label="kubeconfig" prop="kubeconfig" width="120" />
 
             <el-table-column align="left" label="记录创建时间" prop="createdAt" width="180">
+
    <template #default="scope">{{ formatDate(scope.row.createdAt) }}</template>
 </el-table-column>
             <el-table-column align="left" label="记录更新时间" prop="updatedAt" width="180">
@@ -106,6 +108,9 @@
             <el-form-item label="记录更新时间:" prop="updatedAt">
     <el-date-picker v-model="formData.updatedAt" type="date" style="width:100%" placeholder="选择日期" :clearable="true" />
 </el-form-item>
+<el-form-item label="kubeconfig:" prop="kubeconfig">
+    <el-input v-model="formData.kubeconfig" :clearable="true" placeholder="请输入kubeconfig" />
+</el-form-item>
           </el-form>
     </el-drawer>
 
@@ -135,6 +140,10 @@
                     <el-descriptions-item label="记录更新时间">
     {{ detailForm.updatedAt }}
 </el-descriptions-item>
+
+<el-descriptions-item label="kubeconfig">
+    {{ detailForm.kubeconfig }}
+</el-descriptions-item>
             </el-descriptions>
         </el-drawer>
 
@@ -142,6 +151,7 @@
 </template>
 
 <script setup>
+import YamlEditor from '@/components/YamlEditor.vue'
 import {
   createK8sClusters,
   deleteK8sClusters,
@@ -181,6 +191,7 @@ const formData = ref({
             region: '',
             createdAt: new Date(),
             updatedAt: new Date(),
+            kubeconfig: '',
         })
 
 
