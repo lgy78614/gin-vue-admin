@@ -6,7 +6,7 @@
 
         <template v-if="showAllQuery">
           <!-- 将需要控制显示状态的查询条件添加到此范围内 -->
-        </template>
+        </template> 
 
         <el-form-item>
           <el-button type="primary" icon="search" @click="onSubmit">查询</el-button>
@@ -35,15 +35,17 @@
             <el-table-column align="left" label="集群唯一标识" prop="clusterId" width="120" />
 
             <el-table-column align="left" label="集群显示名称" prop="clusterName" width="120" />
+            <el-table-column align="left" label="集群状态" prop="health_status" width="120" />
+            <el-table-column align="left" label="版本" prop="server_version" width="160" />
+            <el-table-column align="left" label="Node" prop="node_count" width="160" />
+            <el-table-column align="left" label="Pod" prop="pod_count" width="160" />
+            <el-table-column align="left" label="环境" prop="environment" width="120" />
 
-            <el-table-column align="left" label="环境: production/staging/development" prop="environment" width="120" />
+            <!-- <el-table-column align="left" label="版本" prop="k8sVersion" width="120" /> -->
 
-            <el-table-column align="left" label="Kubernetes版本" prop="k8sVersion" width="120" />
-
-            <el-table-column align="left" label="云厂商: AWS/Azure/GCP/on-premise" prop="cloudProvider" width="120" />
+            <el-table-column align="left" label="云厂商" prop="cloudProvider" width="120" />
 
             <el-table-column align="left" label="区域" prop="region" width="120" />
-            <el-table-column align="left" label="kubeconfig" prop="kubeconfig" width="120" />
 
             <el-table-column align="left" label="记录创建时间" prop="createdAt" width="180">
 
@@ -109,7 +111,8 @@
     <el-date-picker v-model="formData.updatedAt" type="date" style="width:100%" placeholder="选择日期" :clearable="true" />
 </el-form-item>
 <el-form-item label="kubeconfig:" prop="kubeconfig">
-    <el-input v-model="formData.kubeconfig" :clearable="true" placeholder="请输入kubeconfig" />
+    <!-- <el-input v-model="formData.kubeconfig" :clearable="true" placeholder="请输入kubeconfig" /> -->
+    <YamlEditor v-model:modelValue="formData.kubeconfig" />
 </el-form-item>
           </el-form>
     </el-drawer>
@@ -141,8 +144,10 @@
     {{ detailForm.updatedAt }}
 </el-descriptions-item>
 
+
 <el-descriptions-item label="kubeconfig">
-    {{ detailForm.kubeconfig }}
+    <!-- {{ detailForm.kubeconfig }} -->
+    <YamlEditor v-model:modelValue="detailForm.kubeconfig" />
 </el-descriptions-item>
             </el-descriptions>
         </el-drawer>
@@ -158,7 +163,7 @@ import {
   deleteK8sClustersByIds,
   updateK8sClusters,
   findK8sClusters,
-  getK8sClustersList
+  getK8sClustersList,
 } from '@/api/K8s/k8sClusters'
 
 // 全量引入格式化工具 请按需保留
@@ -197,8 +202,32 @@ const formData = ref({
 
 
 // 验证规则
+// const rule = reactive({
+// })
+
+// 验证规则
 const rule = reactive({
+  clusterId: [{ required: true, message: '请输入集群唯一标识', trigger: 'blur' }],
+  clusterName: [{ required: true, message: '请输入集群显示名称', trigger: 'blur' }],
+  kubeconfig: [
+    { 
+      required: true, 
+      message: 'kubeconfig 不能为空', 
+      trigger: 'blur' 
+    },
+    {
+      validator: (rule, value, callback) => {
+        if (value && typeof value === 'string' && value.trim() === '') {
+          callback(new Error('kubeconfig 不能为空'))
+        } else {
+          callback()
+        }
+      },
+      trigger: 'blur'
+    }
+  ]
 })
+
 
 const elFormRef = ref()
 const elSearchFormRef = ref()

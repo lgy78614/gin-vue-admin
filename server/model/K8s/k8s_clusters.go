@@ -15,7 +15,7 @@ type K8sClusters struct {
 	Region        *string    `json:"region" form:"region" gorm:"comment:区域;column:region;size:64;"`                                                  //区域
 	CreatedAt     *time.Time `json:"createdAt" form:"createdAt" gorm:"comment:记录创建时间;column:created_at;"`                                            //记录创建时间
 	UpdatedAt     *time.Time `json:"updatedAt" form:"updatedAt" gorm:"comment:记录更新时间;column:updated_at;"`                                            //记录更新时间
-	Kubeconfig    *string    `json:"kubeconfig" form:"kubeconfig" gorm:"column:kubeconfig;"`
+	Kubeconfig    *string    `json:"kubeconfig" form:"kubeconfig" gorm:"column:kubeconfig;type:text"`
 }
 
 // TableName k8sClusters表 K8sClusters自定义表名 k8s_clusters

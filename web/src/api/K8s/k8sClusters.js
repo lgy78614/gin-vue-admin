@@ -108,3 +108,16 @@ export const getK8sClustersPublic = () => {
     method: 'get',
   })
 }
+// GetK8sClusterInfo 根据k8s_clusters中的kubeconfig字段，查询K8s集群及资源信息
+// @Tags K8sClusters
+// @Summary 根据k8s_clusters中的kubeconfig字段，查询K8s集群及资源信息
+// @Accept application/json
+// @Produce application/json
+// @Success 200 {object} response.Response{data=object,msg=string} "成功"
+// @Router /k8sClusters/k8sclusters [GET]
+export const k8sclusters = () => {
+  return service({
+    url: '/k8sClusters/k8sclusters',
+    method: 'GET'
+  })
+}
