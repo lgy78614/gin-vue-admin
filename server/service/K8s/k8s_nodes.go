@@ -72,6 +72,7 @@ func (k8sNodesService *K8sNodesService) GetK8sNodesInfoList(ctx context.Context,
 	}
 
 	err = db.Find(&k8sNodess).Error
+
 	return k8sNodess, total, err
 }
 

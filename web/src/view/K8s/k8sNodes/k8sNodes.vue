@@ -3,6 +3,22 @@
   <div>
     <div class="gva-search-box">
       <el-form ref="elSearchFormRef" :inline="true" :model="searchInfo" class="demo-form-inline" @keyup.enter="onSubmit">
+      <el-form-item label="所属集群ID" prop="clusterId">
+        <el-select
+          v-model="searchInfo.clusterId"
+          placeholder="请选择集群"
+          clearable
+          filterable
+          style="width: 100%"
+        >
+          <el-option
+            v-for="item in clusterOptions"
+            :key="item.clusterName"
+            :label="item.clusterId"
+            :value="item.clusterId"
+          />
+  </el-select>
+</el-form-item>
 
         <template v-if="showAllQuery">
           <!-- 将需要控制显示状态的查询条件添加到此范围内 -->
@@ -31,22 +47,21 @@
         @selection-change="handleSelectionChange"
         >
         <el-table-column type="selection" width="55" />
-        
-            <el-table-column align="left" label="节点唯一标识" prop="nodeId" width="120" />
 
-            <el-table-column align="left" label="所属集群ID" prop="clusterId" width="120" />
+            <el-table-column align="left" label="节点唯一标识" prop="clusterId" width="180" />
 
-            <el-table-column align="left" label="节点名称" prop="name" width="120" />
 
-            <el-table-column align="left" label="状态: Ready/NotReady/Unknown" prop="status" width="120" />
+            <el-table-column align="left" label="节点名称" prop="name" width="200" />
 
-            <el-table-column align="left" label="角色: control-plane/worker" prop="role" width="120" />
+            <el-table-column align="left" label="状态" prop="status" width="120" />
+
+            <el-table-column align="left" label="角色" prop="roles" width="120" />
 
             <el-table-column align="left" label="操作系统镜像" prop="osImage" width="120" />
 
             <el-table-column align="left" label="内核版本" prop="kernelVersion" width="120" />
 
-            <el-table-column align="left" label="架构: amd64/arm64" prop="architecture" width="120" />
+            <el-table-column align="left" label="架构" prop="architecture" width="120" />
 
             <el-table-column align="left" label="CPU核心数(可分配总量)" prop="cpuCapacity" width="120" />
 
@@ -54,12 +69,6 @@
 
             <el-table-column align="left" label="Pod容量上限" prop="podCapacity" width="120" />
 
-            <el-table-column align="left" label="K8s中的创建时间" prop="creationTimestamp" width="180">
-   <template #default="scope">{{ formatDate(scope.row.creationTimestamp) }}</template>
-</el-table-column>
-            <el-table-column align="left" label="最后一次心跳/同步时间" prop="lastHeartbeat" width="180">
-   <template #default="scope">{{ formatDate(scope.row.lastHeartbeat) }}</template>
-</el-table-column>
         <el-table-column align="left" label="操作" fixed="right" :min-width="appStore.operateMinWith">
             <template #default="scope">
             <el-button  type="primary" link class="table-button" @click="getDetails(scope.row)"><el-icon style="margin-right: 5px"><InfoFilled /></el-icon>查看</el-button>
@@ -190,11 +199,11 @@ import {
   findK8sNodes,
   getK8sNodesList
 } from '@/api/K8s/k8sNodes'
-
+import { getK8sClustersList } from '@/api/K8s/k8sClusters'
 // 全量引入格式化工具 请按需保留
 import { getDictFunc, formatDate, formatBoolean, filterDict ,filterDataSource, returnArrImg, onDownloadFile } from '@/utils/format'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { ref, reactive } from 'vue'
+import { ref, reactive,watch} from 'vue'
 import { useAppStore } from "@/pinia"
 
 
@@ -243,6 +252,7 @@ const total = ref(0)
 const pageSize = ref(10)
 const tableData = ref([])
 const searchInfo = ref({})
+const clusterOptions = ref([])
 // 重置
 const onReset = () => {
   searchInfo.value = {}
@@ -272,16 +282,34 @@ const handleCurrentChange = (val) => {
 
 // 查询
 const getTableData = async() => {
-  const table = await getK8sNodesList({ page: page.value, pageSize: pageSize.value, ...searchInfo.value })
+  const table = await getK8sNodesList({ page: page.value, pageSize: pageSize.value,...searchInfo.value })
   if (table.code === 0) {
-    tableData.value = table.data.list
-    total.value = table.data.total
+    tableData.value = table.data
+    total.value = table.data.length
     page.value = table.data.page
     pageSize.value = table.data.pageSize
   }
+
 }
 
-getTableData()
+const fetchClusters = async () => {
+  const res = await getK8sClustersList()
+  if (res.code === 0) {
+    clusterOptions.value = res.data.list
+
+    if (res.data.list.length > 0) {
+      searchInfo.value.clusterId = res.data.list[0].clusterId
+      getTableData()
+    }else {
+      tableData.value = []
+      total.value = 0
+    }
+
+  }
+}
+
+fetchClusters()
+
 
 // ============== 表格控制部分结束 ===============
 
