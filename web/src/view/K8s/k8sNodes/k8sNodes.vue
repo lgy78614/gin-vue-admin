@@ -26,18 +26,18 @@
 
         <el-form-item>
           <el-button type="primary" icon="search" @click="onSubmit">查询</el-button>
-          <el-button icon="refresh" @click="onReset">重置</el-button>
+          <!-- <el-button icon="refresh" @click="onReset">重置</el-button> -->
           <el-button link type="primary" icon="arrow-down" @click="showAllQuery=true" v-if="!showAllQuery">展开</el-button>
           <el-button link type="primary" icon="arrow-up" @click="showAllQuery=false" v-else>收起</el-button>
         </el-form-item>
       </el-form>
     </div>
     <div class="gva-table-box">
-        <div class="gva-btn-list">
-            <el-button  type="primary" icon="plus" @click="openDialog()">新增</el-button>
-            <el-button  icon="delete" style="margin-left: 10px;" :disabled="!multipleSelection.length" @click="onDelete">删除</el-button>
-            
-        </div>
+        <!-- <div class="gva-btn-list"> -->
+            <!-- <el-button  type="primary" icon="plus" @click="openDialog()">新增</el-button> -->
+            <!-- <el-button  type="primary">集群节点信息</el-button> -->
+            <!-- <el-button  icon="delete" style="margin-left: 10px;" :disabled="!multipleSelection.length" @click="onDelete">删除</el-button> -->
+        <!-- </div> -->
         <el-table
         ref="multipleTable"
         style="width: 100%"
@@ -71,9 +71,12 @@
 
         <el-table-column align="left" label="操作" fixed="right" :min-width="appStore.operateMinWith">
             <template #default="scope">
-            <el-button  type="primary" link class="table-button" @click="getDetails(scope.row)"><el-icon style="margin-right: 5px"><InfoFilled /></el-icon>查看</el-button>
-            <el-button  type="primary" link icon="edit" class="table-button" @click="updateK8sNodesFunc(scope.row)">编辑</el-button>
-            <el-button   type="primary" link icon="delete" @click="deleteRow(scope.row)">删除</el-button>
+            <el-button  type="primary" link class="table-button" @click="getDetails(scope.row)"><el-icon style="margin-right: 2px"><InfoFilled /></el-icon>查看</el-button>
+            <!-- <el-button  type="primary" link icon="edit" class="table-button" @click="updateK8sNodesFunc(scope.row)">编辑</el-button>
+            <el-button   type="primary" link icon="delete" @click="deleteRow(scope.row)">删除</el-button> -->
+
+            <el-button  type="primary" link icon="edit" class="table-button">编辑</el-button>
+            <el-button   type="primary" link icon="delete" >删除</el-button>
             </template>
         </el-table-column>
         </el-table>
@@ -473,7 +476,9 @@ const openDetailShow = () => {
 // 打开详情
 const getDetails = async (row) => {
   // 打开弹窗
-  const res = await findK8sNodes({ nodeId: row.nodeId })
+  console.log(row.clusterId)
+  // const res = await getK8sClustersList({ clusterId: row.clusterId })
+  const res = await getK8sClustersList({ clusterId: row.clusterId })
   if (res.code === 0) {
     detailForm.value = res.data
     openDetailShow()
